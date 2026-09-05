@@ -5,6 +5,10 @@
 
 # Stop the script if any command fails
 set -e
+# Resolve the folder this script lives in, then work from there.
+# Cron does not run from the project folder, so relative paths would break.
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$SCRIPT_DIR"
 
 # URL stored in an environment variable, as required
 export CSV_URL="https://www.stats.govt.nz/assets/Uploads/Annual-enterprise-survey/Annual-enterprise-survey-2023-financial-year-provisional/Download-data/annual-enterprise-survey-2023-financial-year-provisional.csv"
