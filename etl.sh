@@ -32,3 +32,41 @@ else
     echo "Extract failed: file not found in raw folder"
     exit 1
 fi
+# ---------- TRANSFORM ----------
+
+echo "Starting transform step..."
+
+mkdir -p Transformed
+
+TRANSFORMED_FILE="Transformed/2023_year_finance.csv"
+
+# Rename headers on line 1 only:
+#   Variable_code -> variable_code (required by the assignment)
+#   Year -> year (assignment asks for lowercase 'year')
+# 1s means substitute on line 1 only, so data rows are untouched
+sed '1s/Variable_code/variable_code/; 1s/Year/year/' "$RAW_FILE" > /tmp/renamed.csv
+
+# Select the four required columns.
+# FPAT treats a quoted field as one unit, so commas inside
+# industry names are not mistaken for column separators.
+# The header is read first to find each column's position by name,
+# so this still works if the source ever reorders its columns.
+awk -v FPAT='[^,]*|"[^"]*"' '
+NR==1 {
+    for (i=1; i<=NF; i++) {
+        if ($i=="year") c1=i
+        if ($i=="Value") c2=i
+        if ($i=="Units") c3=i
+        if ($i=="variable_code") c4=i
+    }
+}
+{ print $c1","$c2","$c3","$c4 }
+' /tmp/renamed.csv > "$TRANSFORMED_FILE"
+
+# Confirm the file was created and is not empty
+if [ -s "$TRANSFORMED_FILE" ]; then
+    echo "Transform complete: file saved to $TRANSFORMED_FILE"
+else
+    echo "Transform failed: file not found in Transformed folder"
+    exit 1
+fi
