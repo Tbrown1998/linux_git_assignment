@@ -70,3 +70,23 @@ else
     echo "Transform failed: file not found in Transformed folder"
     exit 1
 fi
+# ---------- LOAD ----------
+
+echo "Starting load step..."
+
+mkdir -p Gold
+
+GOLD_FILE="Gold/2023_year_finance.csv"
+
+# Copy rather than move, so the file stays in Transformed as well
+cp "$TRANSFORMED_FILE" "$GOLD_FILE"
+
+# Confirm the file was loaded and is not empty
+if [ -s "$GOLD_FILE" ]; then
+    echo "Load complete: file saved to $GOLD_FILE"
+else
+    echo "Load failed: file not found in Gold folder"
+    exit 1
+fi
+
+echo "ETL process finished successfully."
